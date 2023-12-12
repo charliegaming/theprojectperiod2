@@ -3,11 +3,11 @@
 #include <WiFiS3.h>
 #include <ArduinoMqttClient.h>
 
-char ssid[] = "IoTatelierF2144";
-char pass[] = "IoTatelier";
+char ssid[] = "shhh";
+char pass[] = "definitely didn't keep these in here";
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
-const char broker[] = "192.168.144.1";
+const char broker[] = "like yeah go ahead ddos a college";
 const int port = 1883;
 const char publishTopic[] = "charlieleemburg/test";
 const char subscribeTopic[] = "charlieleemburg/test";
