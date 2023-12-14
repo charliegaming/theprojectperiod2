@@ -3,17 +3,18 @@
 #include <WiFiS3.h>
 #include <ArduinoMqttClient.h>
 
-char ssid[] = "shhh";
-char pass[] = "definitely didn't keep these in here";
+char ssid[] = "-";
+char pass[] = "-";
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
-const char broker[] = "like yeah go ahead ddos a college";
+const char broker[] = "-";
 const int port = 1883;
 const char publishTopic[] = "charlieleemburg/test";
 const char subscribeTopic[] = "charlieleemburg/test";
 long count = 0;
 const long interval = 1000;
 unsigned long previousMillis = 0;
+bool MQTTconnected = false;
 
 
 DHT11 dht11(8);
@@ -240,33 +241,105 @@ void loop() {
         lcd.print("Connecting");
         lcd.setCursor(0, 1);
         lcd.print("                             ");
-        bool bbb = false;
-        lcd.setCursor(0, 0);
-        while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
-          delay(2500);
-          bbb = !bbb;
-          if (bbb) {
-            lcd.setCursor(0, 0);
-            lcd.print("Connecting.");
-          } else {
-            lcd.setCursor(0, 0);
-            lcd.print("Connecting ");
+        if (!MQTTconnected) {
+          bool bbb = false;
+          lcd.setCursor(0, 0);
+          while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
+            delay(2500);
+            bbb = !bbb;
+            if (bbb) {
+              lcd.setCursor(0, 0);
+              lcd.print("Connecting.");
+            } else {
+              lcd.setCursor(0, 0);
+              lcd.print("Connecting ");
+            }
           }
+          MQTTconnected = false;
+          while (!MQTTconnected) {
+            if (!mqttClient.connect(broker, port)) {
+              delay(1000);
+              bbb = !bbb;
+              if (bbb) {
+                lcd.setCursor(0, 0);
+                lcd.print("Connecting.");
+              } else {
+                lcd.setCursor(0, 0);
+                lcd.print("Connecting ");
+              }
+            } else MQTTconnected = true;
+          }
+          mqttClient.onMessage(onMqttMessage);
+          mqttClient.subscribe(subscribeTopic);
+          delay(20);
         }
-        bool MQTTconnected = false;
-        while (!MQTTconnected) {
-          if (!mqttClient.connect(broker, port)) delay(1000);
-          else MQTTconnected = true;
+        chosen = true;
+        bool opts = true;
+        choise = 0;
+        while (chosen) {
+          if (opts) {
+            lcd.setCursor(0, 1);
+            lcd.print("\x04       \x05      \x06");
+
+          } else {
+            lcd.setCursor(0, 1);
+            lcd.print("\x03       x      \x06");
+          }
+          if (digitalRead(2) == HIGH) {
+            opts = !opts;
+            delay(250);
+          }
+
+          if (digitalRead(4) == HIGH && opts) {
+            choise = (choise + 1) % 2;
+            lcd.setCursor(0, 0);
+            if (choise == 0) lcd.print("Send Trial");
+            if (choise == 1) lcd.print("Recieve Trial");
+            delay(250);
+          }
+          if (digitalRead(4) == HIGH && !opts) {
+            choise = 100;
+            chosen = false;
+            delay(250);
+          }
+          if (digitalRead(7) == HIGH && !opts) {
+            chosen = false;
+            choise += 20;
+            delay(250);
+          }
+          if (digitalRead(7) == HIGH && opts) {
+            choise = (((choise - 1) % 2) + 2) % 2;
+            lcd.setCursor(0, 0);
+            if (choise == 0) lcd.print("Send Trial    ");
+            if (choise == 1) lcd.print("Recieve Trial ");
+            delay(250);
+          }
+          lcd.setCursor(0, 0);
+          if (choise == 0) lcd.print("Send Trial     ");
+          if (choise == 1) lcd.print("Recieve Trial  ");
         }
-        mqttClient.onMessage(onMqttMessage);
-        mqttClient.subscribe(subscribeTopic);
-        lcd.print("finally");
       }
     }
 
     int val = 0;
     bool flash = true;
     int index = 0;
+
+    if (choise == 20) {
+      mqttClient.beginMessage(publishTopic, true, 1);
+      mqttClient.print("value");
+      mqttClient.endMessage();
+      choise = 100;
+    }
+    if (choise == 21) {
+      String message = "";
+      while (mqttClient.available()) { message.concat((char)mqttClient.read()); }
+      lcd.setCursor(0,0);
+      lcd.print(mqttClient.messageTopic());
+      delay(1000);
+      choise = 100;
+    }
+
     if (choise == 10) {
       while (trial[index] != NULL) {
         Serial.println(trial[index]);
