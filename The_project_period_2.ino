@@ -1,16 +1,18 @@
+#include <PubSubClient.h>
+#include <string>
 #include <DHT11.h>
 #include <LiquidCrystal_I2C.h>
 #include <WiFiS3.h>
 #include <ArduinoMqttClient.h>
 
-char ssid[] = "-";
-char pass[] = "-";
+char ssid[] = "IoTatelierF2144";
+char pass[] = "IoTatelier";
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
-const char broker[] = "-";
+const char broker[] = "192.168.144.1";
 const int port = 1883;
-const char publishTopic[] = "charlieleemburg/test";
-const char subscribeTopic[] = "charlieleemburg/test";
+const char publishTopic[] = "charlieleemburg/trial";
+const char subscribeTopic[] = "charlieleemburg/trial";
 long count = 0;
 const long interval = 1000;
 unsigned long previousMillis = 0;
@@ -90,12 +92,15 @@ void setup() {
   lcd.createChar(5, Right);
   lcd.createChar(6, El);
   lcd.createChar(1, R);
+
+  mqttClient.onMessage(onMqttMessage);
 }
 
 
 void loop() {
   int choise = 0;
   bool chosen = true;
+  mqttClient.poll();
   while (choise != 100) {
     while (chosen) {
 
@@ -269,8 +274,7 @@ void loop() {
               }
             } else MQTTconnected = true;
           }
-          mqttClient.onMessage(onMqttMessage);
-          mqttClient.subscribe(subscribeTopic);
+
           delay(20);
         }
         chosen = true;
@@ -326,16 +330,28 @@ void loop() {
     int index = 0;
 
     if (choise == 20) {
-      mqttClient.beginMessage(publishTopic, true, 1);
-      mqttClient.print("value");
-      mqttClient.endMessage();
+      int messageId = 0;
+      int charsDone = 0;
+      int characterid = 0;
+      while (characterid < 3000 && trial[characterid] != NULL) {
+        std::string topicToPublish = publishTopic + std::to_string(messageId);
+        mqttClient.beginMessage(topicToPublish.c_str(), true, 1);
+        for (int nobody = 0; characterid < 3000 && trial[characterid] != NULL && charsDone < 50; characterid++) {
+
+          mqttClient.print(trial[characterid]);
+          mqttClient.print(",");
+          charsDone++;
+        }
+        messageId++;
+        charsDone = 0;
+        mqttClient.endMessage();
+      }
+      
       choise = 100;
     }
     if (choise == 21) {
-      String message = "";
-      while (mqttClient.available()) { message.concat((char)mqttClient.read()); }
-      lcd.setCursor(0,0);
-      lcd.print(mqttClient.messageTopic());
+      mqttClient.subscribe(subscribeTopic);
+      Serial.println("h");
       delay(1000);
       choise = 100;
     }
@@ -489,5 +505,15 @@ void loop() {
   lcd.print("                                                                ");
 }
 void onMqttMessage(int messageSize) {
-  //...
+  String message = "";
+  Serial.print(mqttClient.available());
+  while (mqttClient.available()) {
+    message.concat((char)mqttClient.read());
+  }
+  Serial.print("Received message: ");
+  Serial.println(message);
+  mqttClient.unsubscribe(subscribeTopic);
+}
+
+void readMqttMessage() {
 }
