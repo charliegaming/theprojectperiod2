@@ -4,19 +4,22 @@
 #include <LiquidCrystal_I2C.h>
 #include <WiFiS3.h>
 #include <ArduinoMqttClient.h>
+using namespace std;
 
-char ssid[] = "IoTatelierF2144";
-char pass[] = "IoTatelier";
+char ssid[] = "-";
+char pass[] = "-";
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
-const char broker[] = "192.168.144.1";
+const char broker[] = "-";
 const int port = 1883;
 const char publishTopic[] = "charlieleemburg/trial";
-const char subscribeTopic[] = "charlieleemburg/trial";
+char subscribeTopic[] = "charlieleemburg/trial";
 long count = 0;
 const long interval = 1000;
 unsigned long previousMillis = 0;
 bool MQTTconnected = false;
+bool done = false;
+String message = "";
 
 
 DHT11 dht11(8);
@@ -346,13 +349,36 @@ void loop() {
         charsDone = 0;
         mqttClient.endMessage();
       }
-      
+
+      mqttClient.beginMessage("charlieleemburg/messages", true, 1);
+      mqttClient.print(messageId);
+      mqttClient.endMessage();
       choise = 100;
     }
     if (choise == 21) {
+      message = "";
+
+      done = false;
+      char subscribeTopic[] = "charlieleemburg/messages";
       mqttClient.subscribe(subscribeTopic);
-      Serial.println("h");
-      delay(1000);
+      while (!done) { mqttClient.poll(); }
+      mqttClient.unsubscribe(subscribeTopic);
+      delay(100);
+      int end = message.toInt();
+
+      message = "";
+      for (int start = 1; start < end; start++) {
+        done = false;
+        char subscribeTopic[] = "charlieleemburg/trial";
+        std::string subscribeTopi = subscribeTopic + std::to_string(start);
+        mqttClient.subscribe(subscribeTopi.c_str());
+        while (!done) { mqttClient.poll(); }
+        mqttClient.unsubscribe(subscribeTopi.c_str());
+        delay(100);
+      }
+
+      parseString(message, trial, sizeof(trial) / sizeof(trial[0]));
+
       choise = 100;
     }
 
@@ -505,15 +531,37 @@ void loop() {
   lcd.print("                                                                ");
 }
 void onMqttMessage(int messageSize) {
-  String message = "";
+
   Serial.print(mqttClient.available());
   while (mqttClient.available()) {
     message.concat((char)mqttClient.read());
   }
-  Serial.print("Received message: ");
-  Serial.println(message);
-  mqttClient.unsubscribe(subscribeTopic);
+  //Serial.print("Received message: ");
+  //Serial.println(message);
+  // mqttClient.unsubscribe(subscribeTopic);
+  done = true;
 }
 
 void readMqttMessage() {
+}
+
+void parseString(const String& str, int* arr, size_t arrSize) {
+  int i = 0;
+  int startIndex = 0;
+  int commaIndex = 0;
+
+  while (commaIndex != -1 && i < arrSize) {
+    commaIndex = str.indexOf(',', startIndex);
+
+    if (commaIndex != -1) {
+      arr[i++] = str.substring(startIndex, commaIndex).toInt();
+      startIndex = commaIndex + 1;
+    }
+  }
+
+  // Add the last element and extra NULL if needed
+  if (i < arrSize) {
+    arr[i++] = str.substring(startIndex).toInt();
+    arr[i] = NULL;
+  }
 }
