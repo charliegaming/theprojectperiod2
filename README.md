@@ -1,2 +1,1 @@
-# theprojectperiod2
-For some reason I have to do this...
+Arduino project that can read multiple sensors and display readings and save to an MQTT broker
