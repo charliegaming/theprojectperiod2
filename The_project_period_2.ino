@@ -6,11 +6,11 @@
 #include <ArduinoMqttClient.h>
 using namespace std;
 
-char ssid[] = "-";
-char pass[] = "-";
+char ssid[] = "";
+char pass[] = "";
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
-const char broker[] = "-";
+const char broker[] = "";
 const int port = 1883;
 const char publishTopic[] = "charlieleemburg/trial";
 char subscribeTopic[] = "charlieleemburg/trial";
@@ -101,10 +101,10 @@ void setup() {
 
 
 void loop() {
-  int choise = 0;
+  int choice = 0;
   bool chosen = true;
   mqttClient.poll();
-  while (choise != 100) {
+  while (choice != 100) {
     while (chosen) {
 
       // awful no good code
@@ -112,25 +112,25 @@ void loop() {
       lcd.print("\x04       \x05      \x03");
       while (chosen) {
         if (digitalRead(4) == HIGH) {
-          choise = (choise + 1) % 3;
+          choice = (choice + 1) % 3;
           lcd.setCursor(0, 0);
-          if (choise == 0) lcd.print("Sensor ");
-          if (choise == 1) lcd.print("Server ");
-          if (choise == 2) lcd.print("Console");
+          if (choice == 0) lcd.print("Sensor ");
+          if (choice == 1) lcd.print("Server ");
+          if (choice == 2) lcd.print("Console");
           delay(250);
         }
         if (digitalRead(7) == HIGH) {
-          choise = (((choise - 1) % 3) + 3) % 3;
+          choice = (((choice - 1) % 3) + 3) % 3;
           lcd.setCursor(0, 0);
-          if (choise == 0) lcd.print("Sensor ");
-          if (choise == 1) lcd.print("Server ");
-          if (choise == 2) lcd.print("Console");
+          if (choice == 0) lcd.print("Sensor ");
+          if (choice == 1) lcd.print("Server ");
+          if (choice == 2) lcd.print("Console");
           delay(250);
         }
         lcd.setCursor(0, 0);
-        if (choise == 0) lcd.print("Sensor ");
-        if (choise == 1) lcd.print("Server ");
-        if (choise == 2) lcd.print("Console");
+        if (choice == 0) lcd.print("Sensor ");
+        if (choice == 1) lcd.print("Server ");
+        if (choice == 2) lcd.print("Console");
 
         if (digitalRead(2) == HIGH) {
           chosen = false;
@@ -138,10 +138,10 @@ void loop() {
         }
       }
 
-      if (choise == 0) {
+      if (choice == 0) {
         chosen = true;
         bool opts = true;
-        choise = 0;
+        choice = 0;
         while (chosen) {
           if (opts) {
             lcd.setCursor(0, 1);
@@ -157,17 +157,17 @@ void loop() {
           }
 
           if (digitalRead(4) == HIGH && opts) {
-            choise = (choise + 1) % 5;
+            choice = (choice + 1) % 5;
             lcd.setCursor(0, 0);
-            if (choise == 0) lcd.print("Temperature");
-            if (choise == 1) lcd.print("Humidity   ");
-            if (choise == 2) lcd.print("Light      ");
-            if (choise == 3) lcd.print("Flame      ");
-            if (choise == 4) lcd.print("Distance      ");
+            if (choice == 0) lcd.print("Temperature");
+            if (choice == 1) lcd.print("Humidity   ");
+            if (choice == 2) lcd.print("Light      ");
+            if (choice == 3) lcd.print("Flame      ");
+            if (choice == 4) lcd.print("Distance      ");
             delay(250);
           }
           if (digitalRead(4) == HIGH && !opts) {
-            choise = 100;
+            choice = 100;
             chosen = false;
             delay(250);
           }
@@ -176,26 +176,26 @@ void loop() {
             delay(250);
           }
           if (digitalRead(7) == HIGH && opts) {
-            choise = (((choise - 1) % 5) + 5) % 5;
+            choice = (((choice - 1) % 5) + 5) % 5;
             lcd.setCursor(0, 0);
-            if (choise == 0) lcd.print("Temperature");
-            if (choise == 1) lcd.print("Humidity   ");
-            if (choise == 2) lcd.print("Light      ");
-            if (choise == 3) lcd.print("Flame      ");
-            if (choise == 4) lcd.print("Distance      ");
+            if (choice == 0) lcd.print("Temperature");
+            if (choice == 1) lcd.print("Humidity   ");
+            if (choice == 2) lcd.print("Light      ");
+            if (choice == 3) lcd.print("Flame      ");
+            if (choice == 4) lcd.print("Distance      ");
             delay(250);
           }
           lcd.setCursor(0, 0);
-          if (choise == 0) lcd.print("Temperature");
-          if (choise == 1) lcd.print("Humidity   ");
-          if (choise == 2) lcd.print("Light      ");
-          if (choise == 4) lcd.print("Distance     ");
-          if (choise == 3) lcd.print("Flame      ");
+          if (choice == 0) lcd.print("Temperature");
+          if (choice == 1) lcd.print("Humidity   ");
+          if (choice == 2) lcd.print("Light      ");
+          if (choice == 4) lcd.print("Distance     ");
+          if (choice == 3) lcd.print("Flame      ");
         }
-      } else if (choise == 2) {
+      } else if (choice == 2) {
         chosen = true;
         bool opts = true;
-        choise = 0;
+        choice = 0;
         while (chosen) {
           if (opts) {
             lcd.setCursor(0, 1);
@@ -211,40 +211,40 @@ void loop() {
           }
 
           if (digitalRead(4) == HIGH && opts) {
-            choise = (choise + 1) % 4;
+            choice = (choice + 1) % 4;
             lcd.setCursor(0, 0);
-            if (choise == 0) lcd.print("Newline");
-            if (choise == 1) lcd.print("Space   ");
-            if (choise == 2) lcd.print("Tab      ");
-            if (choise == 3) lcd.print("Comma      ");
+            if (choice == 0) lcd.print("Newline");
+            if (choice == 1) lcd.print("Space   ");
+            if (choice == 2) lcd.print("Tab      ");
+            if (choice == 3) lcd.print("Comma      ");
             delay(250);
           }
           if (digitalRead(4) == HIGH && !opts) {
-            choise = 100;
+            choice = 100;
             chosen = false;
             delay(250);
           }
           if (digitalRead(7) == HIGH && !opts) {
             chosen = false;
-            choise += 10;
+            choice += 10;
             delay(250);
           }
           if (digitalRead(7) == HIGH && opts) {
-            choise = (((choise - 1) % 4) + 4) % 4;
+            choice = (((choice - 1) % 4) + 4) % 4;
             lcd.setCursor(0, 0);
-            if (choise == 0) lcd.print("Newline");
-            if (choise == 1) lcd.print("Space   ");
-            if (choise == 2) lcd.print("Tab      ");
-            if (choise == 3) lcd.print("Comma      ");
+            if (choice == 0) lcd.print("Newline");
+            if (choice == 1) lcd.print("Space   ");
+            if (choice == 2) lcd.print("Tab      ");
+            if (choice == 3) lcd.print("Comma      ");
             delay(250);
           }
           lcd.setCursor(0, 0);
-          if (choise == 0) lcd.print("Newline");
-          if (choise == 1) lcd.print("Space   ");
-          if (choise == 2) lcd.print("Tab      ");
-          if (choise == 3) lcd.print("Comma      ");
+          if (choice == 0) lcd.print("Newline");
+          if (choice == 1) lcd.print("Space   ");
+          if (choice == 2) lcd.print("Tab      ");
+          if (choice == 3) lcd.print("Comma      ");
         }
-      } else if (choise == 1) {
+      } else if (choice == 1) {
         lcd.setCursor(0, 0);
         lcd.print("Connecting");
         lcd.setCursor(0, 1);
@@ -282,7 +282,7 @@ void loop() {
         }
         chosen = true;
         bool opts = true;
-        choise = 0;
+        choice = 0;
         while (chosen) {
           if (opts) {
             lcd.setCursor(0, 1);
@@ -298,32 +298,32 @@ void loop() {
           }
 
           if (digitalRead(4) == HIGH && opts) {
-            choise = (choise + 1) % 2;
+            choice = (choice + 1) % 2;
             lcd.setCursor(0, 0);
-            if (choise == 0) lcd.print("Send Trial");
-            if (choise == 1) lcd.print("Recieve Trial");
+            if (choice == 0) lcd.print("Send Trial");
+            if (choice == 1) lcd.print("Recieve Trial");
             delay(250);
           }
           if (digitalRead(4) == HIGH && !opts) {
-            choise = 100;
+            choice = 100;
             chosen = false;
             delay(250);
           }
           if (digitalRead(7) == HIGH && !opts) {
             chosen = false;
-            choise += 20;
+            choice += 20;
             delay(250);
           }
           if (digitalRead(7) == HIGH && opts) {
-            choise = (((choise - 1) % 2) + 2) % 2;
+            choice = (((choice - 1) % 2) + 2) % 2;
             lcd.setCursor(0, 0);
-            if (choise == 0) lcd.print("Send Trial    ");
-            if (choise == 1) lcd.print("Recieve Trial ");
+            if (choice == 0) lcd.print("Send Trial    ");
+            if (choice == 1) lcd.print("Recieve Trial ");
             delay(250);
           }
           lcd.setCursor(0, 0);
-          if (choise == 0) lcd.print("Send Trial     ");
-          if (choise == 1) lcd.print("Recieve Trial  ");
+          if (choice == 0) lcd.print("Send Trial     ");
+          if (choice == 1) lcd.print("Recieve Trial  ");
         }
       }
     }
@@ -332,7 +332,7 @@ void loop() {
     bool flash = true;
     int index = 0;
 
-    if (choise == 20) {
+    if (choice == 20) {
       int messageId = 0;
       int charsDone = 0;
       int characterid = 0;
@@ -353,9 +353,9 @@ void loop() {
       mqttClient.beginMessage("charlieleemburg/messages", true, 1);
       mqttClient.print(messageId);
       mqttClient.endMessage();
-      choise = 100;
+      choice = 100;
     }
-    if (choise == 21) {
+    if (choice == 21) {
       message = "";
 
       done = false;
@@ -367,7 +367,7 @@ void loop() {
       int end = message.toInt();
 
       message = "";
-      for (int start = 1; start < end; start++) {
+      for (int start = 0; start < end; start++) {
         done = false;
         char subscribeTopic[] = "charlieleemburg/trial";
         std::string subscribeTopi = subscribeTopic + std::to_string(start);
@@ -379,17 +379,17 @@ void loop() {
 
       parseString(message, trial, sizeof(trial) / sizeof(trial[0]));
 
-      choise = 100;
+      choice = 100;
     }
 
-    if (choise == 10) {
+    if (choice == 10) {
       while (trial[index] != NULL) {
         Serial.println(trial[index]);
         index++;
       }
-      choise = 100;
+      choice = 100;
     }
-    if (choise == 11) {
+    if (choice == 11) {
       while (trial[index] != NULL) {
         Serial.print(trial[index]);
         Serial.print(" ");
@@ -397,9 +397,9 @@ void loop() {
       }
 
       Serial.print("\n");
-      choise = 100;
+      choice = 100;
     }
-    if (choise == 13) {
+    if (choice == 13) {
       while (trial[index] != NULL) {
         Serial.print(trial[index]);
         Serial.print(",");
@@ -407,9 +407,9 @@ void loop() {
       }
 
       Serial.print("\n");
-      choise = 100;
+      choice = 100;
     }
-    if (choise == 12) {
+    if (choice == 12) {
       while (trial[index] != NULL) {
         Serial.print(trial[index]);
         Serial.print("\t");
@@ -417,15 +417,15 @@ void loop() {
       }
 
       Serial.print("\n");
-      choise = 100;
+      choice = 100;
     }
 
-    if (choise != 100) {
+    if (choice != 100) {
 
       lcd.setCursor(0, 0);
       lcd.print("                                                                ");
       lcd.setCursor(0, 1);
-      lcd.print("\x03      REC     x");
+      lcd.print("       REC     x");
 
 
       chosen = true;
@@ -434,7 +434,7 @@ void loop() {
       while (chosen) {
         if (digitalRead(2) == HIGH) {
           chosen = false;
-          choise = 100;
+          choice = 100;
           delay(250);
         }
         if (digitalRead(4) == HIGH) {
@@ -443,10 +443,10 @@ void loop() {
           if (recording) {
             lcd.setCursor(0, 1);
             flash = true;
-            lcd.print("\x03     \x01REC     x");
+            lcd.print("      \x01REC     x");
           } else {
             lcd.setCursor(0, 1);
-            lcd.print("\x03      REC     x");
+            lcd.print("       REC     x");
           }
 
 
@@ -461,21 +461,21 @@ void loop() {
 
             lcd.setCursor(0, 1);
             if (flash) {
-              lcd.print("\x03     \x01REC     x");
+              lcd.print("      \x01REC     x");
             } else {
 
-              lcd.print("\x03      REC     x");
+              lcd.print("       REC     x");
             }
             flash = !flash;
           } else {
             lcd.setCursor(0, 1);
-            lcd.print("\x03     !REC     x");
+            lcd.print("      !REC     x");
           }
         }
         int temperature = dht11.readTemperature();
         int humidity = dht11.readHumidity();
         if (temperature != DHT11::ERROR_CHECKSUM && temperature != DHT11::ERROR_TIMEOUT && humidity != DHT11::ERROR_CHECKSUM && humidity != DHT11::ERROR_TIMEOUT) {
-          if (choise == 0) {
+          if (choice == 0) {
             lcd.setCursor(0, 0);
             lcd.print("T = ");
             lcd.print(temperature);
@@ -483,14 +483,14 @@ void loop() {
             lcd.print("C");
             val = temperature;
           }
-          if (choise == 1) {
+          if (choice == 1) {
             lcd.setCursor(0, 0);
             lcd.print("q = ");
             lcd.print(humidity);
             lcd.print("%");
             val = humidity;
           }
-          if (choise == 2) {
+          if (choice == 2) {
             int value = analogRead(A0);
             lcd.setCursor(0, 0);
             lcd.print("E = ");
@@ -498,7 +498,7 @@ void loop() {
             lcd.print("lx");
             val = value;
           }
-          if (choise == 3) {
+          if (choice == 3) {
             int value = analogRead(A1);
             lcd.setCursor(0, 0);
             lcd.print("x = ");
@@ -506,7 +506,7 @@ void loop() {
             lcd.print("");
             val = value;
           }
-          if (choise == 4) {
+          if (choice == 4) {
             digitalWrite(9, LOW);
             delayMicroseconds(2);
             digitalWrite(9, HIGH);
@@ -532,7 +532,7 @@ void loop() {
 }
 void onMqttMessage(int messageSize) {
 
-  Serial.print(mqttClient.available());
+
   while (mqttClient.available()) {
     message.concat((char)mqttClient.read());
   }
